@@ -1,5 +1,7 @@
 package main
 
+import "ctrl/api/router"
+
 func main() {
-	println("Hello, World!")
+	router.SetupRouter()
 }
