@@ -16,11 +16,12 @@
 
 # directories (remove the comment below to include it)
 tmp/
+build/
 
 # Go workspace file
 go.work
 go.work.sum
 
 # env file
-env/config.json
+**/env/config.json
 
