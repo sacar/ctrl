@@ -24,7 +24,7 @@ CTRL is a Go-based project that manages chapter versions for various companies a
 2. Set up the database:
    - Create a PostgreSQL database `ctrl`
    - Load the sql script in `db/script/create-db.sql`
-   - Update the database configuration in `src/env/config.local.json`
+   - Create a `env/config.json` file based on `env/config.local.json`
 
 3. Build the project:
    ```
