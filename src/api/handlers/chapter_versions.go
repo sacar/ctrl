@@ -3,10 +3,18 @@ package handlers
 import (
 	"ctrl/db"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 )
+
+type ChapterVersionsResponse struct {
+	CompanyName     string               `json:"company"`
+	ProjectName     string               `json:"project"`
+	ChapterName     string               `json:"chapter"`
+	ChapterVersions *[]db.ChapterVersion `json:"versions"`
+}
 
 func validateID(id string) bool {
 	id = strings.TrimSpace(id)
@@ -31,18 +39,43 @@ func HandleChapterVersion(w http.ResponseWriter, r *http.Request) {
 
 	dbMgr, err := db.NewDBManager()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error creating DB manager: %v", err)
+		http.Error(w, "Something went wrong. Please try again later.", http.StatusInternalServerError)
 		return
 	}
 	defer dbMgr.Close()
 
 	chaptersDetails, err := dbMgr.GetChapterDetails(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting chapter details: %v", err)
+		http.Error(w, "Something went wrong. Please try again later.", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	if chaptersDetails == nil {
+		http.Error(w, "Chapter not found", http.StatusNotFound)
+		return
+	}
 
-	json.NewEncoder(w).Encode(chaptersDetails)
+	chapterVersions, err := dbMgr.GetChapterVersions(id)
+	if err != nil {
+		log.Printf("Error getting chapter versions: %v", err)
+		http.Error(w, "Something went wrong. Please try again later.", http.StatusInternalServerError)
+		return
+	}
+
+	if chapterVersions == nil {
+		chapterVersions = &[]db.ChapterVersion{}
+	}
+
+	response := ChapterVersionsResponse{
+		CompanyName:     chaptersDetails.CompanyName,
+		ProjectName:     chaptersDetails.ProjectName,
+		ChapterName:     chaptersDetails.ChapterName,
+		ChapterVersions: chapterVersions,
+	}
+
+	// return the response as json
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

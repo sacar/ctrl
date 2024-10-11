@@ -1,0 +1,9 @@
+{
+    "host": "127.0.0.1",
+    "port": "5432",
+    "user": "dev_user",
+    "dbname": "ctrl_dev",
+    "password": "dev_password",
+    "sslmode": "disable",
+    "driver": "postgres"
+}

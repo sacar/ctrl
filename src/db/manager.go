@@ -1,17 +1,18 @@
 package db
 
 import (
+	"ctrl/config"
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
-// db manager that will have function to perform operations on the database
 type DBManager struct {
 	db Database
 }
 
 func NewDBManager() (*DBManager, error) {
-	db, err := NewDatabase("postgres", "user=postgres password=sakar@123 dbname=ctrl host=localhost port=5432 sslmode=disable")
+	db, err := NewDatabase("postgres", fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", config.GetString("user"), config.GetString("password"), config.GetString("dbname"), config.GetString("host"), config.GetString("port")))
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +58,7 @@ func (mgr *DBManager) GetChapter(id string) (*[]Chapter, error) {
 
 // function to fetch chapter versions from the database
 func (mgr *DBManager) GetChapterDetails(id string) (*ChapterDetails, error) {
-
+	log.Println("Getting chapter details for id:", id)
 	query := `
 			SELECT
 				c.chapter_name,
@@ -67,7 +68,7 @@ func (mgr *DBManager) GetChapterDetails(id string) (*ChapterDetails, error) {
 			JOIN project p ON c.chapter_project_id = p.project_id
 			JOIN company co ON p.project_company_id = co.company_id
 			WHERE c.chapter_id = $1
-			`
+		`
 
 	result, err := mgr.db.Query(query, id)
 	if err != nil {
@@ -91,4 +92,36 @@ func (mgr *DBManager) GetChapterDetails(id string) (*ChapterDetails, error) {
 	}
 
 	return &chapterDetails[0], nil
+}
+
+func (mgr *DBManager) GetChapterVersions(id string) (*[]ChapterVersion, error) {
+	query := `
+			SELECT
+				cv.chapter_version_id,
+				cv.chapter_version_number,
+				cv.chapter_version_create_date,
+				p.person_username
+			FROM chapter_version cv
+			JOIN person p ON cv.chapter_version_person_id = p.person_id
+			WHERE cv.chapter_version_chapter_id = $1
+			ORDER BY cv.chapter_version_number ASC
+		`
+	result, err := mgr.db.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert the result to string
+	resultStr, ok := result.(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid result type: %T", result)
+	}
+
+	// unmarshal the json data
+	var chapterVersions []ChapterVersion
+	if err := json.Unmarshal([]byte(resultStr), &chapterVersions); err != nil {
+		return nil, err
+	}
+
+	return &chapterVersions, nil
 }

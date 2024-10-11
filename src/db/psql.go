@@ -28,8 +28,7 @@ func (psql *PSQL) Close() error {
 
 func (psql *PSQL) Query(query string, args ...interface{}) (interface{}, error) {
 
-	// wrap the query in a json_agg
-	query = fmt.Sprintf("SELECT json_agg(t) FROM (%s) t", query)
+	query = fmt.Sprintf("SELECT COALESCE(json_agg(t), '[]'::json) FROM (%s) t", query)
 
 	rows, err := psql.db.Query(query, args...)
 	if err != nil {
@@ -37,16 +36,20 @@ func (psql *PSQL) Query(query string, args ...interface{}) (interface{}, error) 
 	}
 	defer rows.Close()
 
-	var result string
+	var result sql.NullString
 	if rows.Next() {
 		if err := rows.Scan(&result); err != nil {
 			return nil, err
 		}
 	} else {
-		return nil, sql.ErrNoRows
+		return []interface{}{}, nil
 	}
 
-	return result, nil
+	if !result.Valid {
+		return []interface{}{}, nil
+	}
+
+	return result.String, nil
 }
 
 func (psql *PSQL) Execute(query string, args ...interface{}) error {

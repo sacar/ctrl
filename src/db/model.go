@@ -11,3 +11,11 @@ type ChapterDetails struct {
 	ProjectName string `json:"project_name"`
 	CompanyName string `json:"company_name"`
 }
+
+type ChapterVersion struct {
+	ChapterVersionID int    `json:"chapter_version_id"`
+	Version          int    `json:"chapter_version_number"`
+	CreatedAt        string `json:"chapter_version_create_date"`
+	CreatedBy        string `json:"person_username"`
+	Description      string `json:"chapter_version_description"`
+}
