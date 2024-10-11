@@ -17,7 +17,7 @@ CTRL is a Go-based project that manages chapter versions for various companies a
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/ctrl.git
+   git clone https://github.com/sacar/ctrl.git
    cd ctrl
    ```
 
