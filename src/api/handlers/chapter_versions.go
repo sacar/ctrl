@@ -64,10 +64,6 @@ func HandleChapterVersion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if chapterVersions == nil {
-		chapterVersions = &[]db.ChapterVersion{}
-	}
-
 	response := ChapterVersionsResponse{
 		CompanyName:     chaptersDetails.CompanyName,
 		ProjectName:     chaptersDetails.ProjectName,
