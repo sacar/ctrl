@@ -17,5 +17,5 @@ type ChapterVersion struct {
 	Version          int    `json:"chapter_version_number"`
 	CreatedAt        string `json:"chapter_version_create_date"`
 	CreatedBy        string `json:"person_username"`
-	Description      string `json:"chapter_version_description"`
+	AppVersion       string `json:"app_version"`
 }

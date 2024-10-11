@@ -100,7 +100,11 @@ func (mgr *DBManager) GetChapterVersions(id string) (*[]ChapterVersion, error) {
 				cv.chapter_version_id,
 				cv.chapter_version_number,
 				cv.chapter_version_create_date,
-				p.person_username
+				p.person_username,
+				CASE
+					WHEN cv.chapter_version_appversion = '11.0' THEN 'CC 2015'
+					ELSE 'Unknown Version'
+				END AS app_version
 			FROM chapter_version cv
 			JOIN person p ON cv.chapter_version_person_id = p.person_id
 			WHERE cv.chapter_version_chapter_id = $1
