@@ -10,10 +10,10 @@ type Database interface {
 	Execute(query string, args ...interface{}) error
 }
 
-func NewDatabase(driver string) (Database, error) {
+func NewDatabase(driver string, connStr string) (Database, error) {
 	switch driver {
-	case "psql":
-		return &PSQL{}, nil
+	case "postgres":
+		return &PSQL{driver: driver, connStr: connStr}, nil
 	default:
 		return nil, fmt.Errorf("invalid database driver: %s", driver)
 	}

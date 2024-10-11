@@ -1,14 +1,20 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+
+	_ "github.com/lib/pq"
+)
 
 type PSQL struct {
-	db *sql.DB
+	driver  string
+	connStr string
+	db      *sql.DB
 }
 
 func (psql *PSQL) Connect() error {
 	var err error
-	psql.db, err = sql.Open("postgres", "user=postgres dbname=ctrl sslmode=disable")
+	psql.db, err = sql.Open(psql.driver, psql.connStr)
 	if err != nil {
 		return err
 	}

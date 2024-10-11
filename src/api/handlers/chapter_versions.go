@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"ctrl/db"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -27,6 +28,13 @@ func HandleChapterVersion(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
+
+	dbMgr, err := db.NewDBManager()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer dbMgr.Close()
 
 	w.WriteHeader(http.StatusOK)
 
