@@ -36,7 +36,13 @@ func HandleChapterVersion(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dbMgr.Close()
 
+	chaptersDetails, err := dbMgr.GetChapterDetails(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 
-	json.NewEncoder(w).Encode(map[string]string{"chapter_id": id})
+	json.NewEncoder(w).Encode(chaptersDetails)
 }
