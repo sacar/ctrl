@@ -10,7 +10,7 @@ CTRL is a Go-based project that manages chapter versions for various companies a
 
 ## Prerequisites
 
-- Go 1.16 or higher
+- Go 1.23
 - PostgreSQL database
 
 ## Setup
